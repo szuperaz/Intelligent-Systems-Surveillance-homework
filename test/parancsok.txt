@@ -1,0 +1,35 @@
+﻿# 3.2 teszteset
+New-ADGroup -Name 'Project Test1' -Path 'OU=Projects,DC=irfhf,DC=local'
+New-ADGroup -Name 'Project Test2' -Path 'OU=Projects,DC=irfhf,DC=local'
+New-ADGroup -Name 'Project Test3' -Path 'OU=Projects,DC=irfhf,DC=local'
+Add-ADGroupMember 'Project Test1' dsmith
+Add-ADGroupMember 'Project Test1' wgoring
+Add-ADGroupMember 'Project Test2' dsmith
+Add-ADGroupMember 'Project Test2' wgoring
+Add-ADGroupMember 'Project Test3' dsmith
+Add-ADGroupMember 'Project Test3' wgoring
+
+# 3.3.1 teszteset
+Add-ADGroupMember 'Project Test1' cdhun
+Add-ADGroupMember 'Project Test1' jranney
+
+# 3.3.2 teszteset
+New-ADGroup -Name 'Project Test4' -Path 'OU=Projects,DC=irfhf,DC=local'
+Add-ADGroupMember 'Project Test4' rdun
+Add-ADGroupMember 'Project Test4' xrue
+New-ADUser -Name jtailor -Path 'OU=Logistics,OU=Department of Vehicles,OU=Faculty of Engineering,OU=Faculties,OU=University,DC=irfhf,DC=local'
+Add-ADGroupMember 'Project Test4' jtailor
+
+# 3.4 teszteset
+Add-ADGroupMember 'Project Test2' abeal1
+Add-ADGroupMember 'Project Test2' amills2
+Add-ADGroupMember 'Project Test2' aranney
+Add-ADGroupMember 'Project Test2' aallendorf
+Add-ADGroupMember 'Project Test2' akendall
+Add-ADGroupMember 'Project Test2' aconry
+Add-ADGroupMember 'Project Test2' acadwell
+Add-ADGroupMember 'Project Test2' abillings1
+Add-ADGroupMember 'Project Test2' acorbin
+Add-ADGroupMember 'Project Test2' alangton1
+Add-ADGroupMember 'Project Test1' 'Project Test2'
+

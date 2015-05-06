@@ -1,0 +1,102 @@
+﻿TESZTELÉS:
+A szkript fejléce: Get-CompanyPartners.ps1 [-Name] <String> [-OrderByPartners]
+	- egy kötelező paraméter: egyetemi oktató neve
+	- egy opcionális kapcsoló
+
+0. Szkript futtatása parancssorból az ActiveDirectory betölése előtt
+	Kiadott parancsok: ./Get-CompanyPartners.ps1 kheyden
+	Kimenet: az ActiveDirectory modul betöltődik, a szkript lefut
+
+1. Szkript paraméterezésének ellenőrzése
+	1.1 Name paraméter elhagyása
+		Kiadott parancsok: ./Get-CompanyPartners.ps1
+		Kiemenet: a parancssor bekéri a hiányzó paramétert
+	1.2 Név megadásának elmulasztása
+		Kiadott parancsok: .\Get-CompanyPartners.ps1 -Name
+		Kimenet: parancssori hibaüzenetet kapunk
+	1.3 Név megadása, de a '-Name' elhagyása
+		Kiadott Parancsok: .\Get-CompanyPartners.ps1 sclay
+		Kimenet: a szkript lefut
+	1.3 Kapcsoló használata
+		Kiadott parancsok: .\Get-CompanyPartners.ps1 sclay -OrderByPartners
+		Kimenet: a szkript lefut
+	1.4 Paraméterek felcserélése
+		Kiadott parancsok: .\Get-CompanyPartners.ps1 -OrderByPartners sclay
+		Kimenet: a szkript lefut
+
+2. Paraméterek validálásának ellenőrzése
+	2.1 Nem létező nevet adunk
+		Kiadott parancsok: .\Get-CompanyPartners.ps1 fffgrer53
+		Kimenet: 'fffgrer53 does not exsist!' hibaüzenet
+	2.2 Nem egyetemi oktató nevét adjuk meg
+		2.2.1 Partnercég dolgozójának nevét adjuk meg
+			Kiadott parancsok: .\Get-CompanyPartners.ps1 mfulsom
+			Kimenet: 'mfulsom does not a university professor!' hibaüzenet
+		2.2.2 Egyetemi alkalmazott, de nem tanár nevét adjuk meg
+			Kiadott parancsok: .\Get-CompanyPartners.ps1 hstein
+			Kimenet: 'hstein does not a university professor!' hibaüzenet
+		2.2.3 Felhasználó (Users csoport) nevét adjuk meg
+			Kiadott parancsok: .\Get-CompanyPartners.ps1 zizi
+			Kimenet: '.\Get-CompanyPartners.ps1 zizi' hibaüzenet
+
+3. Kimenet helyességének ellenőrzése
+	3.1 Az oktató nem vesz részt egyetlen egyetemi projektben sem
+		Tesztelés előkészítése: New-ADUser -Name dsmith -Path 'OU=Graph Theory,OU=Department of Computer Science,OU=Faculty of Informatics,OU=Faculties,OU=University,DC=irfhf,DC=local'
+		Kiadott parancsok: .\Get-CompanyPartners.ps1 dsmith
+		Kimenet: 'dsmith currently does not work with colleagues from partner companies'
+	3.2 Az oktató több projekten is együtt dolgozik ugyanazzal a munkatárssal
+		Tesztelés előkészítése:
+			- Létrehoztam három projektet
+			- Mindháromhoz ugyanazt a két embert adtam hozzá:
+				- dsmith egyetemi oktatót, akit az előző teszt során hoztam létre, tehát csak ezen a három projekten dolgozik
+				- wgoring-t, aki az X-Corporation tagja
+		(a konkrét parancsok a parancsok.txt-ben találhatók)
+		Kiadott Parancsok: .\Get-CompanyPartners.ps1 dsmith
+		Kimenet:
+			X-Corporation (1)
+	3.3 A projekten dolgozó egyetemi munkatársakat a szkript figyelmen kívül hagyja
+		3.3.1 Az oktató együtt dolgozik partnercégek és az egyetem munkatársaival is
+			Tesztelés előkészítése: Az előbb létrehozott projektek egyikéhez hozzáadtam cdhun egyetemi oktatót, és jranney adminisztrációs munkatársat
+			(a konkrét parancsok a parancsok.txt-ben találhatók)
+			Kiadott parancsok: .\Get-CompanyPartners.ps1 dsmith
+			Kimenet:
+				X-Corporation (1)
+		3.3.2 Az oktató csak egyetemi projekteken vesz részt
+			Tesztelés előkészítése: Felvettem egy oktatót (jtailor) és egy projektet, amelyekhez csak egyetemi munkatársakat rendeltem.
+			Kiadott parancsok: .\Get-CompanyPartners.ps1 jtailor
+			(a konkrét parancsok a parancsok.txt-ben találhatók)
+			Kimenet: 'jtailor currently does not work with colleagues from partner companies'
+	3.4 Ha a projektek tagjai között csoportok is szerepelnek, a szkript akkor is helyesen működik
+		Tesztelés előkészítése: Egy csoporthoz hozzáadtam minden cégből 1-1 munkatársat, majd az egész csoportot hozzáadtam egy olyan projekthez, amelyen dsmtih is dolgozik
+		(a konkrét parancsok a parancsok.txt-ben találhatók)
+		Kiadott parancsok: .\Get-CompanyPartners.ps1 dsmith
+		Kimenet:
+			Advanced Idea Mechanics (1)
+			Daily Star (1)
+			LexCorp (1)
+			Queen Consolidated (1)
+			S.T.A.R. Labs (1)
+			Skynet (1)
+			Stark Industries (1)
+			Technet (1)
+			Wayne Enterprises (1)
+			X-Corporation (2)
+			
+4. Kimenet formátumának ellenőrzése
+	4.1 Kimenet kapcsoló használata nélkül
+		A 3.4-es teszteset kimenet jól szemlélteti, hogy a kapcsoló nélkül a kimenet formuátuma megfelelő, a rendezés helyes.
+	4.2 Kimenet kapcsoló használatával
+		Kiadott parancsok: .\Get-CompanyPartners.ps1 kheyden -OrderByPartners
+		Kimenet:
+			Daily Star (10)
+			Stark Industries (9)
+			Technet (9)
+			Queen Consolidated (8)
+			Advanced Idea Mechanics (6)
+			S.T.A.R. Labs (6)
+			LexCorp (5)
+			Skynet (4)
+			Wayne Enterprises (4)
+			X-Corporation (4)
+		Látszik, hogy a szkript a partnerek számának egyezőségét is jól kezeli.
+
